@@ -8,29 +8,32 @@
 using namespace std;
 static int moves=0;
 
-GuessList ItterativeSolver(Sudoku&s ,GuessList l){
-    Sudoku k = Sudoku(s);
-    while(true){
-        k=s;
-        k.InsertGuesslist(l);
-        k.UpdatePossibilies();
-        while(k.FillSinglePossibility()==true);
+pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
 
-        bool solved = k.CheckFullySolved();
-        bool consistent = k.CheckConsistent();
-        bool possible = k.CheckPossible();
+    pair<GuessList,Sudoku> p(l,s);
+    while(true){
+        p.second=s;
+        p.second.InsertGuesslist(p.first);
+        p.second.UpdatePossibilies();
+        while(p.second.FillSinglePossibility()==true);
+
+        bool solved = p.second.CheckFullySolved();
+        bool consistent = p.second.CheckConsistent();
+        bool possible = p.second.CheckPossible();
 
         if(solved && consistent){
             cout << "Solved and consistent." << endl;
-            return l;
+            return p;
         }else if(!consistent || !possible){
             cout << "Changing guess" << endl;
-            l.ChangeWrongGuess();
+            p.first.ChangeWrongGuess();
         }else if(!solved){
             cout << "Specifying guess" << endl;
-            l.SpecifyGuess();
+            p.first.SpecifyGuess();
         }
     }
+    throw runtime_error("Cannot solve sudoku.");
+    return p;
 }
 
 
@@ -91,16 +94,7 @@ int main()
      0,0,0,8,0,0,0,0,0,
      0,0,0,9,0,0,0,0,0};
     
-    /*Sudoku starter_sudoku = Sudoku(starter_sudoku_array);
-    cout << starter_sudoku << endl;
-    cout << "Consistent: " << starter_sudoku.CheckConsistent() << endl;
-    cout << "Fully solved: " << starter_sudoku.CheckFullySolved() << endl;
-
-    Sudoku solved_sudoku = Sudoku(solved_sudoku_array);
-    cout << solved_sudoku << endl;
-    cout << "Consistent: " << solved_sudoku.CheckConsistent() << endl;
-    cout << "Fully solved: " << solved_sudoku.CheckFullySolved() << endl;
-    */
+    
     cout << "Before filling in single possibilities: " << endl;
     Sudoku s = Sudoku(starter_sudoku_array_one_removed);
     cout << s << endl;
@@ -109,18 +103,10 @@ int main()
     cout << "Possible: " << s.CheckPossible() << endl;
     s.UpdatePossibilies();
     GuessList l = GuessList(s);
-    l.SpecifyGuess();
-    GuessList l1 = ItterativeSolver(s,l);
+    pair<GuessList,Sudoku> p = ItterativeSolver(s,l);
 
-    s.InsertGuesslist(l1);
-    s.UpdatePossibilies();
-    while(s.FillSinglePossibility()==true);
-    cout << s << endl;
+    cout << p.first << endl;
+    cout << p.second << endl;
 
-    /*
-    cout << "Consistent: " << k.CheckConsistent() << endl;
-    cout << "Fully solved: " << k.CheckFullySolved() << endl;
-    cout << "Possible: " << k.CheckPossible() << endl;
-    */
     return 0;
 }
