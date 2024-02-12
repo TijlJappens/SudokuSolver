@@ -33,45 +33,45 @@ class Sudoku{
         int GetElement(const int& i,const int& j) const {return table[i+9*j];}
         unordered_set<int> GetPossibilities(const int& i,const int& j) const {return possibilities[i+9*j];}
 
-
+        //Checks if the table is consistent.
         bool CheckConsistent(){
-            //For all columns, for all numbers,
+            //For all columns, rows and squares, for all numbers,
             // check if a number isn't included twice
             for(int i=0;i<9;i++){
                 for(int n=1;n<10;n++){
-                    int n_count = 0;
+                    int n_count_row = 0;
+                    int n_count_col = 0;
+                    int n_count_square = 0;
                     for(int j=0;j<9;j++){
-                        if(GetElement(i,j) == n){n_count++;}
+                        //This checks columns.
+                        if(GetElement(i,j) == n){n_count_row++;}
+                        //This checks rows.
+                        if(GetElement(j,i) == n){n_count_col++;}
+                        //This checks squares.
+                        if(GetElement((i*3)%9+j%3,3*((i*3)/9)+j/3) == n){n_count_square++;}
                     }
-                    if(n_count>1){return false;}
-                }
-            }
-            //Same thing for columns
-            for(int i=0;i<9;i++){
-                for(int n=1;n<10;n++){
-                    int n_count = 0;
-                    for(int j=0;j<9;j++){
-                        if(GetElement(j,i) == n){n_count++;}
-                    }
-                    if(n_count>1){return false;}
-                }
-            }
-            //Same thing for the blocks
-            for(int i1=0;i1<9;i1+=3){
-                for(int j1=0;j1<9;j1+=3){
-                    for(int n=1;n<10;n++){
-                        int n_count = 0;
-                        for(int i2=0;i2<3;i2++){
-                            for(int j2=0;j2<3;j2++){
-                                if(GetElement(i1+i2,j1+j2)==n){n_count++;}
-                            }
-                        }
-                        if(n_count>1){return false;}
-                    }
+                    if(n_count_row>1 || n_count_col>1 || n_count_square>1){return false;}
                 }
             }
             return true;
         }
+
+        //Checks if inserting a (single) new element doesn't create additional inconsistencies.
+        bool CheckConsistentSinglePosition(int x,int y){
+            int n = GetElement(x,y);
+            int n_count_row = 0;
+            int n_count_col = 0;
+            int n_count_square = 0;
+            for(int j=0;j<9;j++){
+                if(GetElement(x,j) == n){n_count_row++;}
+                if(GetElement(j,y) == n){n_count_col++;}
+                int i = (x/3+3*(y/3))*3;
+                if(GetElement(i%9+j%3,3*(i/9)+j/3) == n){n_count_square++;}
+            }
+            if(n_count_row>1 || n_count_col>1 || n_count_square>1){return false;}
+            return true;
+        }
+
         bool CheckFullySolved(){
             for(int i=0;i<9*9;i++){
                 if(table[i] == 0){return false;}
@@ -87,7 +87,7 @@ class Sudoku{
                     }else{
                         for(int n:possibilities[i+9*j]){
                             ChangeElement(i,j,n);
-                            if(!CheckConsistent()){possibilities[i+9*j].erase(n);}
+                            if(!CheckConsistentSinglePosition(i,j)){possibilities[i+9*j].erase(n);}
                             ChangeElement(i,j,0);
                         }
                     }

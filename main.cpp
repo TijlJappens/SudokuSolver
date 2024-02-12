@@ -1,6 +1,7 @@
 #include <iostream>
 #include <array>
 #include <vector>
+#include <chrono>
 #include "unordered_set"
 #include "sudoku.h"
 
@@ -22,13 +23,13 @@ pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
         bool possible = p.second.CheckPossible();
 
         if(solved && consistent){
-            cout << "Solved and consistent." << endl;
+            //cout << "Solved and consistent." << endl;
             return p;
         }else if(!consistent || !possible){
-            cout << "Changing guess" << endl;
+            //cout << "Changing guess" << endl;
             p.first.ChangeWrongGuess();
         }else if(!solved){
-            cout << "Specifying guess" << endl;
+            //cout << "Specifying guess" << endl;
             p.first.SpecifyGuess();
         }
     }
@@ -101,9 +102,15 @@ int main()
     cout << "Consistent: " << s.CheckConsistent() << endl;
     cout << "Fully solved: " << s.CheckFullySolved() << endl;
     cout << "Possible: " << s.CheckPossible() << endl;
+
+    auto start = chrono::system_clock::now();
     s.UpdatePossibilies();
     GuessList l = GuessList(s);
     pair<GuessList,Sudoku> p = ItterativeSolver(s,l);
+
+    auto end = chrono::system_clock::now();
+    auto elapsed = end - start;
+    cout << elapsed.count() << '\n';
 
     cout << p.first << endl;
     cout << p.second << endl;
