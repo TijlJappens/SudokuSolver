@@ -82,20 +82,24 @@ class Sudoku{
             return true;
         }
 
+        void UpdateSinglePossibility(const int& i,const int& j){
+            if(GetElement(i,j)!=0){
+                possibilities[i+9*j].SetAllFalse();
+            }else{
+                for(int n=1;n<=9;n++){
+                    if(possibilities[i+9*j].GetBool(n)==true){
+                        ChangeElement(i,j,n);
+                        if(!CheckConsistentSinglePosition(i,j)){possibilities[i+9*j].SetFalse(n);}
+                        ChangeElement(i,j,0); 
+                    }
+                }
+            }
+        }
+
         void UpdatePossibilies(){
             for(int i=0;i<9;i++){
                 for(int j=0;j<9;j++){
-                    if(GetElement(i,j)!=0){
-                        possibilities[i+9*j].SetAllFalse();
-                    }else{
-                        for(int n=1;n<=9;n++){
-                            if(possibilities[i+9*j].GetBool(n)==true){
-                                ChangeElement(i,j,n);
-                                if(!CheckConsistentSinglePosition(i,j)){possibilities[i+9*j].SetFalse(n);}
-                                ChangeElement(i,j,0); 
-                            }
-                        }
-                    }
+                    UpdateSinglePossibility(i,j);
                 }
             }
         }
@@ -109,14 +113,37 @@ class Sudoku{
             return true;
         }
 
+        bool CheckIfOnlyInsertionPlaceInColumnRowOrSquare(const int& i,const int& j, const int& n){
+            for(int k=0;k<9;k++){
+                if(i+9*j!=k+9*j && possibilities[k+9*j].GetBool(n)==true){
+                    return true;
+                }
+                if(i+9*j!=i+9*k && possibilities[i+9*k].GetBool(n)==true){
+                    return true;
+                }
+                int l = (i/3)*3+(j/3)*3*9;
+                if(l+k%3+9*(k/3)!=i+9*j && possibilities[l+k%3+9*(k/3)].GetBool(n)==true){
+                    return true;
+                }
+            }
+            return false;
+        }
 
-
-        //This method fills in a number if it is the only possibility. The bool checks if something has changed using this method.
+        //This method fills in a number if it is the only possibility and then inserts it.
+        //
+        //The bool checks if something has changed using this method.
         bool FillSinglePossibility(){
             bool changed=false;
             for(int i=0;i<9;i++){
                 for(int j=0;j<9;j++){
                     if(possibilities[i+9*j].OnlyOneTrue()==true){ChangeElement(i,j,possibilities[i+9*j].FirstTrue());changed=true;}
+                    else{
+                        for(int n=1;n<=9;n++){
+                            if(possibilities[i+9*j].GetBool(n)==true){
+                                if(!CheckIfOnlyInsertionPlaceInColumnRowOrSquare(i,j,n)){ChangeElement(i,j,n);changed=true;}
+                            }
+                        }
+                    }
                 }
             }
             UpdatePossibilies();
