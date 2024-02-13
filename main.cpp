@@ -18,7 +18,12 @@ pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
         p.second=s;
         p.second.InsertGuesslist(p.first);
         p.second.UpdatePossibilies();
-        while(p.second.FillSinglePossibility()==true);
+        while(true){
+            moves++;
+            cout << moves << endl;
+            if(p.second.FillSinglePossibility()==false){break;}
+            cout<<p.second<<endl;
+        }
 
         bool solved = p.second.CheckFullySolved();
         bool consistent = p.second.CheckConsistent();
@@ -96,10 +101,21 @@ int main()
      7,0,0,0,0,0,0,0,0,
      0,0,0,8,0,0,0,0,0,
      0,0,0,9,0,0,0,0,0};
+
+     array<int, 9*9> master_difficulty_array = 
+     {0,0,4,9,0,0,0,6,1,
+     2,0,6,0,0,0,0,0,0,
+     1,0,0,3,6,0,0,2,0,
+     0,3,7,0,0,0,0,0,4,
+     0,0,0,1,0,0,6,0,0,
+     0,1,0,0,4,0,3,0,5,
+     7,4,0,0,3,0,0,0,0,
+     0,0,0,0,1,5,0,0,9,
+     0,0,0,0,0,2,0,4,0};
     
     
     cout << "Before filling in single possibilities: " << endl;
-    Sudoku s = Sudoku(starter_sudoku_array);
+    Sudoku s = Sudoku(master_difficulty_array);
     cout << s << endl;
     cout << "Consistent: " << s.CheckConsistent() << endl;
     cout << "Fully solved: " << s.CheckFullySolved() << endl;
