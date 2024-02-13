@@ -4,12 +4,12 @@
 #include "bool_array.h"
 #include "guess_list.h"
 
-static const unordered_set<int> all_numbers={1,2,3,4,5,6,7,8,9};
 
 class Sudoku{
     private:
         array<int,9*9> table;
-        array<unordered_set<int>,9*9> possibilities;
+        array<BoolArray,9*9> possibilities;
+        //array<unordered_set<int>,9*9> possibilities;
         
 
     public:
@@ -18,9 +18,11 @@ class Sudoku{
             for(int i=0;i<9;i++){
                 for(int j=0;j<9;j++){
                     if(table[i+9*j]!=0){
-                        possibilities[i+9*j]={};
+                        BoolArray b = BoolArray(false);
+                        possibilities[i+9*j]=b;
                     }else{
-                        possibilities[i+9*j]=all_numbers;
+                        BoolArray b = BoolArray(true);
+                        possibilities[i+9*j]=b;
                     }
                 }
             }
@@ -32,7 +34,7 @@ class Sudoku{
         // The first element is called column, the second one the row and the third one is the variable by which to change it.
         void ChangeElement(const int& i,const int& j,const int& k){table[i+9*j]=k;}
         int GetElement(const int& i,const int& j) const {return table[i+9*j];}
-        unordered_set<int> GetPossibilities(const int& i,const int& j) const {return possibilities[i+9*j];}
+        BoolArray GetPossibilities(const int& i,const int& j) const {return possibilities[i+9*j];}
 
         //Checks if the table is consistent.
         bool CheckConsistent(){
@@ -84,12 +86,14 @@ class Sudoku{
             for(int i=0;i<9;i++){
                 for(int j=0;j<9;j++){
                     if(GetElement(i,j)!=0){
-                        possibilities[i+9*j].clear();
+                        possibilities[i+9*j].SetAllFalse();
                     }else{
-                        for(int n:possibilities[i+9*j]){
-                            ChangeElement(i,j,n);
-                            if(!CheckConsistentSinglePosition(i,j)){possibilities[i+9*j].erase(n);}
-                            ChangeElement(i,j,0);
+                        for(int n=1;n<=9;n++){
+                            if(possibilities[i+9*j].GetBool(n)==true){
+                                ChangeElement(i,j,n);
+                                if(!CheckConsistentSinglePosition(i,j)){possibilities[i+9*j].SetFalse(n);}
+                                ChangeElement(i,j,0); 
+                            }
                         }
                     }
                 }
@@ -99,7 +103,7 @@ class Sudoku{
         bool CheckPossible(){
             for(int i=0;i<9;i++){
                 for(int j=0;j<9;j++){
-                    if(GetElement(i,j)==0 && possibilities[i+9*j].empty()){return false;}
+                    if(GetElement(i,j)==0 && possibilities[i+9*j].NoneTrue()){return false;}
                 }
             }
             return true;
@@ -112,7 +116,7 @@ class Sudoku{
             bool changed=false;
             for(int i=0;i<9;i++){
                 for(int j=0;j<9;j++){
-                    if(possibilities[i+9*j].size()==1){ChangeElement(i,j,*possibilities[i+9*j].begin());changed=true;}
+                    if(possibilities[i+9*j].OnlyOneTrue()==true){ChangeElement(i,j,possibilities[i+9*j].FirstTrue());changed=true;}
                 }
             }
             UpdatePossibilies();
@@ -155,7 +159,7 @@ GuessList::GuessList(const Sudoku& s){
     for(int i=0;i<9;i++){
         for(int j=0;j<9;j++){
             if(s.GetElement(i,j)==0){
-                unordered_set<int> a = s.GetPossibilities(i,j);
+                BoolArray a = s.GetPossibilities(i,j);
                 Triple t=Triple(i,j,0,a);
                 guesses.push_back(t);
             }

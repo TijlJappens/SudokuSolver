@@ -2,11 +2,13 @@
 #include <array>
 #include <vector>
 #include <chrono>
-#include "unordered_set"
+
+using namespace std;
+
 #include "sudoku.h"
 
 
-using namespace std;
+
 static int moves=0;
 
 pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
@@ -97,7 +99,7 @@ int main()
     
     
     cout << "Before filling in single possibilities: " << endl;
-    Sudoku s = Sudoku(starter_sudoku_array_one_removed);
+    Sudoku s = Sudoku(starter_sudoku_array);
     cout << s << endl;
     cout << "Consistent: " << s.CheckConsistent() << endl;
     cout << "Fully solved: " << s.CheckFullySolved() << endl;

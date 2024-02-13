@@ -9,23 +9,20 @@ class GuessList{
     public:
     class Triple{
         public:
-            Triple(int i, int j, int k, unordered_set<int> l){
+            Triple(int i, int j, int k, BoolArray l){
                 firstX=i; firstY=j; second=k; third=l;
         }
         bool IsContained(){
-            if(third.count(second)==1){return true;}
+            if(third.GetBool(second)==true){return true;}
             else{return false;}
         }
         int GetLowest(){
-            for(int i=0;i<10;i++){
-                if(third.count(i)==1){return i;}
-            }
-            return -1;
+            return third.FirstTrue();
         }
         int firstX;
         int firstY;
         int second;
-        unordered_set<int> third;
+        BoolArray third;
     };
 
     public:
