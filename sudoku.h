@@ -1,6 +1,7 @@
 #ifndef SUDOKU_H
 #define SUDOKU_H
 
+#include "bool_array.h"
 #include "guess_list.h"
 
 static const unordered_set<int> all_numbers={1,2,3,4,5,6,7,8,9};
