@@ -3,6 +3,9 @@
 #include <vector>
 #include <chrono>
 
+#include <fstream>
+#include <string>
+
 using namespace std;
 
 #include "sudoku.h"
@@ -18,12 +21,7 @@ pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
         p.second=s;
         p.second.InsertGuesslist(p.first);
         p.second.UpdatePossibilies();
-        while(true){
-            moves++;
-            cout << moves << endl;
-            if(p.second.FillSinglePossibility()==false){break;}
-            cout<<p.second<<endl;
-        }
+        while(p.second.FillSinglePossibility()==true);
 
         bool solved = p.second.CheckFullySolved();
         bool consistent = p.second.CheckConsistent();
@@ -45,81 +43,44 @@ pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
 }
 
 
-int main()
+int main(int argc, char **argv)
 {
-    array<int, 9*9> starter_sudoku_array = 
-    {4,5,0,0,0,0,0,0,0,
-     0,0,2,0,7,0,6,3,0,
-     0,0,0,0,0,0,0,2,8,
-     0,0,0,9,5,0,0,0,0,
-     0,8,6,0,0,0,2,0,0,
-     0,2,0,6,0,0,7,5,0,
-     0,0,0,0,0,0,4,7,6,
-     0,7,0,0,4,5,0,0,0,
-     0,0,8,0,0,9,0,0,0};
+    if(argc>2){throw runtime_error("Too many arguments.");}
+    else if(argc==1){throw runtime_error("No path to sudoku given.");}
+    
+    string path = argv[1];
 
-     array<int, 9*9> solved_sudoku_array = 
-    {4,5,3,8,2,6,1,9,7,
-     8,9,2,5,7,1,6,3,4,
-     1,6,7,4,9,3,5,2,8,
-     7,1,4,9,5,2,8,6,3,
-     5,8,6,1,3,7,2,4,9,
-     3,2,9,6,8,4,7,5,1,
-     9,3,5,2,1,8,4,7,6,
-     6,7,1,3,4,5,9,8,2,
-     2,4,8,7,6,9,3,1,5};
+    array<int, 9*9> a;
+    ifstream myfile;
+    
+    myfile.open(path);
+    if(myfile.fail()){
+        cerr << "Couldn't find file.";
+        exit(1);
+    }
+    
 
-     array<int, 9*9> starter_sudoku_array_one_removed = 
-    {0,5,0,0,0,0,0,0,0,
-     0,0,2,0,7,0,6,3,0,
-     0,0,0,0,0,0,0,2,8,
-     0,0,0,9,5,0,0,0,0,
-     0,8,6,0,0,0,2,0,0,
-     0,2,0,6,0,0,7,5,0,
-     0,0,0,0,0,0,4,7,6,
-     0,7,0,0,4,5,0,0,0,
-     0,0,8,0,0,9,0,0,0};
-
-     array<int, 9*9> testing_solver_horizontal_line_array = 
-    {1,2,3,4,5,6,7,0,0,
-     0,0,0,0,0,0,0,0,0,
-     0,0,0,0,0,0,0,0,0,
-     0,0,0,0,0,0,0,9,8,
-     0,0,0,0,0,0,0,0,0,
-     0,0,0,0,0,0,0,0,0,
-     0,0,0,0,0,0,0,0,0,
-     0,0,0,0,0,0,0,0,0,
-     0,0,0,0,0,0,0,0,0};
-
-     array<int, 9*9> testing_solver_vertical_line_array = 
-    {1,0,0,0,0,0,0,0,0,
-     2,0,0,0,0,0,0,0,0,
-     3,0,0,0,0,0,0,0,0,
-     4,0,0,0,0,0,0,0,0,
-     5,0,0,0,0,0,0,0,0,
-     6,0,0,0,0,0,0,0,0,
-     7,0,0,0,0,0,0,0,0,
-     0,0,0,8,0,0,0,0,0,
-     0,0,0,9,0,0,0,0,0};
-
-     array<int, 9*9> master_difficulty_array = 
-     {0,0,4,9,0,0,0,6,1,
-     2,0,6,0,0,0,0,0,0,
-     1,0,0,3,6,0,0,2,0,
-     0,3,7,0,0,0,0,0,4,
-     0,0,0,1,0,0,6,0,0,
-     0,1,0,0,4,0,3,0,5,
-     7,4,0,0,3,0,0,0,0,
-     0,0,0,0,1,5,0,0,9,
-     0,0,0,0,0,2,0,4,0};
+    if ( myfile.is_open() ) {
+        int i=0;
+        char mychar;
+        while ( myfile ) {
+            mychar = myfile.get();
+            if(isdigit(mychar)){
+                if(i>a.size()-1){throw runtime_error("Too many numbers in file.");}
+                a[i] = (int) (mychar-'0');
+                i++;
+            }
+        }
+    }
+    myfile.close();
     
     
-    cout << "Before filling in single possibilities: " << endl;
-    Sudoku s = Sudoku(master_difficulty_array);
-    cout << s << endl;
-    cout << "Consistent: " << s.CheckConsistent() << endl;
-    cout << "Fully solved: " << s.CheckFullySolved() << endl;
-    cout << "Possible: " << s.CheckPossible() << endl;
+    std::cout << "Before filling in single possibilities: " << endl;
+    Sudoku s = Sudoku(a);
+    std::cout << s << endl;
+    std::cout << "Consistent: " << s.CheckConsistent() << endl;
+    std::cout << "Fully solved: " << s.CheckFullySolved() << endl;
+    std::cout << "Possible: " << s.CheckPossible() << endl;
 
     auto start = chrono::system_clock::now();
     s.UpdatePossibilies();
@@ -128,10 +89,10 @@ int main()
 
     auto end = chrono::system_clock::now();
     auto elapsed = end - start;
-    cout << elapsed.count() << '\n';
+    std::cout << elapsed.count() << '\n';
 
-    cout << p.first << endl;
-    cout << p.second << endl;
-
+    std::cout << p.first << endl;
+    std::cout << p.second << endl;
+    
     return 0;
 }
