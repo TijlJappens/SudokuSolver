@@ -136,14 +136,17 @@ class Sudoku{
             bool changed=false;
             for(int i=0;i<9;i++){
                 for(int j=0;j<9;j++){
-                    if(possibilities[i+9*j].OnlyOneTrue()==true){ChangeElement(i,j,possibilities[i+9*j].FirstTrue());changed=true;}
-                    /*else{
-                        for(int n=1;n<=9;n++){
-                            if(possibilities[i+9*j].GetBool(n)==true){
-                                if(CheckIfOnlyInsertionPlaceInColumnRowOrSquare(i,j,n)){ChangeElement(i,j,n);changed=true;}
+                    if(GetElement(i,j)==0){
+                        if(possibilities[i+9*j].OnlyOneTrue()==true){ChangeElement(i,j,possibilities[i+9*j].FirstTrue());changed=true;}
+                        else if(possibilities[i+9*j].NoneTrue()==true){return false;}
+                        /*else{
+                            for(int n=1;n<=9;n++){
+                                if(possibilities[i+9*j].GetBool(n)==true){
+                                    if(CheckIfOnlyInsertionPlaceInColumnRowOrSquare(i,j,n)){ChangeElement(i,j,n);changed=true;}
+                                }
                             }
-                        }
-                    }*/
+                        }*/
+                    }
                 }
             }
             UpdatePossibilies();
