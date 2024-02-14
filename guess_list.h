@@ -36,6 +36,25 @@ class GuessList{
             return -1;
         }
 
+        void SpecifyGuessQueue(queue<GuessList>& q){
+            for(int i=0;i<guesses.size();i++){
+                if(guesses[i].second == 0){
+                    for(int i=0;i<guesses.size();i++){
+                        if(guesses[i].second == 0){
+                            for(short int n=1;n<=9;n++){
+                                if(guesses[i].third.GetBool(n)==true){
+                                    GuessList l = *this;
+                                    l.guesses[i].second = n;
+                                    q.push(l);
+                                }
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
         void SpecifyGuess(){
             int to_be_specified=GetFirstZeroIndex();
             guesses[to_be_specified].second=guesses[to_be_specified].GetLowest();}

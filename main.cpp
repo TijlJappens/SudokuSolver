@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <string>
+#include <queue>
 
 using namespace std;
 
@@ -17,7 +18,10 @@ static int moves=0;
 pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
 
     pair<GuessList,Sudoku> p(l,s);
-    while(true){
+    queue<GuessList> ToBeChecked;
+    ToBeChecked.push(l);
+    while(ToBeChecked.empty()==false){
+        p.first=ToBeChecked.front();
         p.second=s;
         p.second.InsertGuesslist(p.first);
         p.second.UpdatePossibilies();
@@ -32,12 +36,12 @@ pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
             return p;
         }else if(!consistent || !possible){
             moves++;
-            //cout << "Changing guess" << endl;
-            p.first.ChangeWrongGuess();
+            ToBeChecked.pop();
         }else if(!solved){
             moves++;
             //cout << "Specifying guess" << endl;
-            p.first.SpecifyGuess();
+            ToBeChecked.pop();
+            p.first.SpecifyGuessQueue(ToBeChecked);
         }
     }
     throw runtime_error("Cannot solve sudoku.");
