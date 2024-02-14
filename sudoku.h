@@ -7,13 +7,12 @@
 
 class Sudoku{
     private:
-        array<int,9*9> table;
+        array<short int,9*9> table;
         array<BoolArray,9*9> possibilities;
-        //array<unordered_set<int>,9*9> possibilities;
         
 
     public:
-        Sudoku(array<int,9*9> t){
+        Sudoku(array<short int,9*9> t){
             table=t;
             for(int i=0;i<9;i++){
                 for(int j=0;j<9;j++){
@@ -29,11 +28,11 @@ class Sudoku{
         }
 
 
-        array<int,9*9> GetTable(){return table;}
+        array<short int,9*9> GetTable(){return table;}
 
         // The first element is called column, the second one the row and the third one is the variable by which to change it.
-        void ChangeElement(const int& i,const int& j,const int& k){table[i+9*j]=k;}
-        int GetElement(const int& i,const int& j) const {return table[i+9*j];}
+        void ChangeElement(const int& i,const int& j,const short int& k){table[i+9*j]=k;}
+        short int GetElement(const int& i,const int& j) const {return table[i+9*j];}
         BoolArray GetPossibilities(const int& i,const int& j) const {return possibilities[i+9*j];}
 
         //Checks if the table is consistent.
@@ -41,7 +40,7 @@ class Sudoku{
             //For all columns, rows and squares, for all numbers,
             // check if a number isn't included twice
             for(int i=0;i<9;i++){
-                for(int n=1;n<10;n++){
+                for(short int n=1;n<10;n++){
                     int n_count_row = 0;
                     int n_count_col = 0;
                     int n_count_square = 0;
@@ -86,7 +85,7 @@ class Sudoku{
             if(GetElement(i,j)!=0){
                 possibilities[i+9*j].SetAllFalse();
             }else{
-                for(int n=1;n<=9;n++){
+                for(short int n=1;n<=9;n++){
                     if(possibilities[i+9*j].GetBool(n)==true){
                         ChangeElement(i,j,n);
                         if(!CheckConsistentSinglePosition(i,j)){possibilities[i+9*j].SetFalse(n);}
@@ -186,8 +185,8 @@ ostream& operator<<(ostream& os, const Sudoku& sud) {
 
 
 GuessList::GuessList(const Sudoku& s){
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
+    for(short int i=0;i<9;i++){
+        for(short int j=0;j<9;j++){
             if(s.GetElement(i,j)==0){
                 BoolArray a = s.GetPossibilities(i,j);
                 Triple t=Triple(i,j,0,a);

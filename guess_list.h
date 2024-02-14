@@ -21,7 +21,7 @@ class GuessList{
         }
         int firstX;
         int firstY;
-        int second;
+        short int second;
         BoolArray third;
     };
 

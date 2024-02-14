@@ -31,9 +31,11 @@ pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
             //cout << "Solved and consistent." << endl;
             return p;
         }else if(!consistent || !possible){
+            moves++;
             //cout << "Changing guess" << endl;
             p.first.ChangeWrongGuess();
         }else if(!solved){
+            moves++;
             //cout << "Specifying guess" << endl;
             p.first.SpecifyGuess();
         }
@@ -50,7 +52,7 @@ int main(int argc, char **argv)
     
     string path = argv[1];
 
-    array<int, 9*9> a;
+    array<short int, 9*9> a;
     ifstream myfile;
     
     myfile.open(path);
@@ -67,7 +69,7 @@ int main(int argc, char **argv)
             mychar = myfile.get();
             if(isdigit(mychar)){
                 if(i>a.size()-1){throw runtime_error("Too many numbers in file.");}
-                a[i] = (int) (mychar-'0');
+                a[i] = (short int) (mychar-'0');
                 i++;
             }
         }
@@ -89,7 +91,8 @@ int main(int argc, char **argv)
 
     auto end = chrono::system_clock::now();
     auto elapsed = end - start;
-    std::cout << elapsed.count() << '\n';
+    std::cout << "It took " << elapsed.count() << " micro seconds." << endl;
+    std::cout << "It took " << moves << " guesses." << endl;
 
     std::cout << p.first << endl;
     std::cout << p.second << endl;
