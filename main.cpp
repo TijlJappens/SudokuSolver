@@ -15,10 +15,9 @@ using namespace std;
 
 
 static int moves=0;
-static const short int amount_of_threads=4;
+static const short int amount_of_threads=10;
 
 void ItterativeSolverSingleThread(GuessList* g,Sudoku* s,bool* solved,bool* consistent,bool* possible){
-    cout << "ItterativeSolverSingleThread" << endl;
     s->InsertGuesslist(*g);
     s->UpdatePossibilies();
     while(s->FillSinglePossibility()==true);
@@ -35,12 +34,12 @@ pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
     queue<GuessList> ToBeChecked;
     ToBeChecked.push(l);
 
-    array<thread*,amount_of_threads> t;
-    array<GuessList*,amount_of_threads> results_guesses;
-    array<Sudoku*,amount_of_threads> results_sudokus;
-    array<bool*,amount_of_threads> solved;
-    array<bool*,amount_of_threads> consistent;
-    array<bool*,amount_of_threads> possible;
+    array<thread*,amount_of_threads> t={nullptr};
+    array<GuessList*,amount_of_threads> results_guesses={nullptr};
+    array<Sudoku*,amount_of_threads> results_sudokus={nullptr};
+    array<bool*,amount_of_threads> solved={nullptr};
+    array<bool*,amount_of_threads> consistent={nullptr};
+    array<bool*,amount_of_threads> possible={nullptr};
 
     while(true){
         for(int i=0;i<amount_of_threads;i++){
@@ -76,18 +75,21 @@ pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
                 }else if(!*solved[i]){
                     moves++;
                     //cout << "Specifying guess" << endl;
-                    cout << *results_guesses[i] << endl;
+                    //cout << *results_guesses[i] << endl;
                     results_guesses[i]->SpecifyGuessQueue(ToBeChecked);
                     
                 }
             }
+            
+        }
+        
+        for(int i=0;i<amount_of_threads;i++){
             if(results_guesses[i]!=nullptr){delete results_guesses[i]; results_guesses[i]=nullptr;}
             if(results_sudokus[i]!=nullptr){delete results_sudokus[i]; results_sudokus[i]=nullptr;}
             if(solved[i]!=nullptr){delete solved[i]; solved[i]=nullptr;}
             if(consistent[i]!=nullptr){delete consistent[i]; consistent[i]=nullptr;}
             if(possible[i]!=nullptr){delete possible[i]; possible[i]=nullptr;}
         }
-        cout << ToBeChecked.size() << endl;
     }
 }
 
