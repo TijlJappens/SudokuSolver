@@ -6,6 +6,8 @@
         "ostream": "cpp",
         "fstream": "cpp",
         "iosfwd": "cpp",
-        "xlocmes": "cpp"
+        "xlocmes": "cpp",
+        "chrono": "cpp",
+        "queue": "cpp"
     }
 }

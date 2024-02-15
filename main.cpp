@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <queue>
+#include <thread>
 
 using namespace std;
 
@@ -14,38 +15,80 @@ using namespace std;
 
 
 static int moves=0;
+static const short int amount_of_threads=4;
+
+void ItterativeSolverSingleThread(GuessList* g,Sudoku* s,bool* solved,bool* consistent,bool* possible){
+    cout << "ItterativeSolverSingleThread" << endl;
+    s->InsertGuesslist(*g);
+    s->UpdatePossibilies();
+    while(s->FillSinglePossibility()==true);
+
+    *solved = s->CheckFullySolved();
+    *consistent = s->CheckConsistent();
+    *possible = s->CheckPossible();
+
+}
 
 pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
 
-    pair<GuessList,Sudoku> p(l,s);
+    
     queue<GuessList> ToBeChecked;
     ToBeChecked.push(l);
-    while(ToBeChecked.empty()==false){
-        p.first=ToBeChecked.front();
-        p.second=s;
-        p.second.InsertGuesslist(p.first);
-        p.second.UpdatePossibilies();
-        while(p.second.FillSinglePossibility()==true);
 
-        bool solved = p.second.CheckFullySolved();
-        bool consistent = p.second.CheckConsistent();
-        bool possible = p.second.CheckPossible();
+    array<thread*,amount_of_threads> t;
+    array<GuessList*,amount_of_threads> results_guesses;
+    array<Sudoku*,amount_of_threads> results_sudokus;
+    array<bool*,amount_of_threads> solved;
+    array<bool*,amount_of_threads> consistent;
+    array<bool*,amount_of_threads> possible;
 
-        if(solved && consistent){
-            //cout << "Solved and consistent." << endl;
-            return p;
-        }else if(!consistent || !possible){
-            moves++;
-            ToBeChecked.pop();
-        }else if(!solved){
-            moves++;
-            //cout << "Specifying guess" << endl;
-            ToBeChecked.pop();
-            p.first.SpecifyGuessQueue(ToBeChecked);
+    while(true){
+        for(int i=0;i<amount_of_threads;i++){
+            if(ToBeChecked.size()>=1){
+                results_guesses[i] = new GuessList(ToBeChecked.front());
+                ToBeChecked.pop();
+                results_sudokus[i] = new Sudoku(s);
+                solved[i]=new bool(false);
+                consistent[i]= new bool(false);
+                possible[i]=new bool(false);
+                t[i] = new thread(ItterativeSolverSingleThread,results_guesses[i],results_sudokus[i],solved[i],consistent[i],possible[i]);
+            }else{
+                t[i]=nullptr;
+                results_guesses[i]=nullptr;
+                results_sudokus[i]=nullptr;
+            }
         }
+        for(int i=0;i<amount_of_threads;i++){
+            if(t[i]!=nullptr){
+                t[i]->join();
+                delete t[i];
+                t[i]=nullptr;
+            }
+        }
+
+        for(int i=0;i<amount_of_threads;i++){
+            if(results_guesses[i]!=nullptr&&results_sudokus[i]!=nullptr){
+                if(*solved[i]&&*consistent[i]){
+                    pair<GuessList,Sudoku> p(*results_guesses[i],*results_sudokus[i]);
+                    return p;
+                }else if(!(*consistent[i] && *possible[i])){
+                    moves++;
+                }else if(!*solved[i]){
+                    moves++;
+                    //cout << "Specifying guess" << endl;
+                    cout << *results_guesses[i] << endl;
+                    results_guesses[i]->SpecifyGuessQueue(ToBeChecked);
+                    
+                }
+            }
+            if(results_guesses[i]!=nullptr){delete results_guesses[i]; results_guesses[i]=nullptr;}
+            if(results_sudokus[i]!=nullptr){delete results_sudokus[i]; results_sudokus[i]=nullptr;}
+            if(solved[i]!=nullptr){delete solved[i]; solved[i]=nullptr;}
+            if(consistent[i]!=nullptr){delete consistent[i]; consistent[i]=nullptr;}
+            if(possible[i]!=nullptr){delete possible[i]; possible[i]=nullptr;}
+        }
+        cout << ToBeChecked.size() << endl;
     }
-    throw runtime_error("Cannot solve sudoku.");
-    return p;
 }
 
 
