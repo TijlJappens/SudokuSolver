@@ -27,6 +27,7 @@ class GuessList{
 
     public:
         GuessList(const Sudoku& s);
+        GuessList();
 
         int GetFirstZeroIndex(){
             for(int i=0;i<guesses.size();i++){

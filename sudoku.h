@@ -12,8 +12,7 @@ class Sudoku{
         
 
     public:
-        Sudoku(array<short int,9*9> t){
-            table=t;
+        Sudoku(array<short int,9*9> t): table(t){
             for(int i=0;i<9;i++){
                 for(int j=0;j<9;j++){
                     if(table[i+9*j]!=0){
@@ -25,6 +24,9 @@ class Sudoku{
                     }
                 }
             }
+        }
+        Sudoku():Sudoku({0}){
+
         }
 
 
@@ -185,6 +187,18 @@ ostream& operator<<(ostream& os, const Sudoku& sud) {
 
 
 GuessList::GuessList(const Sudoku& s){
+    for(short int i=0;i<9;i++){
+        for(short int j=0;j<9;j++){
+            if(s.GetElement(i,j)==0){
+                BoolArray a = s.GetPossibilities(i,j);
+                Triple t=Triple(i,j,0,a);
+                guesses.push_back(t);
+            }
+        }
+    }
+}
+GuessList::GuessList(){
+    Sudoku s;
     for(short int i=0;i<9;i++){
         for(short int j=0;j<9;j++){
             if(s.GetElement(i,j)==0){

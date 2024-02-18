@@ -7,7 +7,7 @@
 
 class ThreadPool {
 public:
-    ThreadPool(size_t numThreads) : stop(false) {
+    ThreadPool(size_t numThreads) : stop(false), taskCounter(0), completedTasks(0) {
         for (size_t i = 0; i < numThreads; ++i) {
             workers.emplace_back([this] {
                 while (true) {
@@ -26,6 +26,12 @@ public:
                     }
 
                     task();
+
+                    // Increment the completed task counter
+                    {
+                        std::unique_lock<std::mutex> lock(completedTasksMutex);
+                        completedTasks++;
+                    }
                 }
             });
         }
@@ -49,9 +55,18 @@ public:
         {
             std::unique_lock<std::mutex> lock(queueMutex);
             tasks.emplace([f, args...] { f(args...); });
+            taskCounter++;
         }
 
         condition.notify_one();
+    }
+
+    bool allTasksCompleted() {
+        std::unique_lock<std::mutex> lock(completedTasksMutex);
+        return taskCounter == completedTasks;
+    }
+    void SetStop(){
+        stop=true;
     }
 
 private:
@@ -61,4 +76,8 @@ private:
     std::mutex queueMutex;
     std::condition_variable condition;
     bool stop;
+
+    size_t taskCounter;
+    size_t completedTasks;
+    std::mutex completedTasksMutex;
 };
