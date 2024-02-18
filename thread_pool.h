@@ -38,10 +38,7 @@ public:
     }
 
     ~ThreadPool() {
-        {
-            std::unique_lock<std::mutex> lock(queueMutex);
-            stop = true;
-        }
+        stopThreads();
 
         condition.notify_all();
 
@@ -65,8 +62,16 @@ public:
         std::unique_lock<std::mutex> lock(completedTasksMutex);
         return taskCounter == completedTasks;
     }
-    void SetStop(){
-        stop=true;
+    void stopThreads() {
+        {
+            std::unique_lock<std::mutex> lock(queueMutex);
+            stop = true;
+        }
+
+        condition.notify_all();
+    }
+    bool GetStop(){
+        return stop;
     }
 
 private:

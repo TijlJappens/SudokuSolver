@@ -46,12 +46,13 @@ static SudokuSolver static_solver;
 static Sudoku static_sudoku;
 
 void ItterativeSolverSingleThread(Sudoku s, SudokuSolver solve, ThreadPool* pool){
+    if(pool->GetStop()==true){return;}
     Sudoku sud = s;
     solve.solve(sud);
     if(solve.solved&&solve.consistent){
         static_solver=solve;
         static_sudoku=sud;
-        pool->SetStop();
+        pool->stopThreads();
         return;
     }else if(!(solve.consistent&&solve.possible)){
         moves++;
@@ -68,7 +69,7 @@ void ItterativeSolverSingleThread(Sudoku s, SudokuSolver solve, ThreadPool* pool
 }
 
 void ItterativeSolver(Sudoku&s ,GuessList& l){
-    ThreadPool pool(10);
+    ThreadPool pool(4);
     SudokuSolver newSolver(l,false,false,false);
     ItterativeSolverSingleThread(s,newSolver,&pool);
     while(!pool.allTasksCompleted()){
