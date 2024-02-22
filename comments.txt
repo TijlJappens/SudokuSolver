@@ -1,0 +1,6 @@
+To compile this file use
+./make_script.bat build
+To run this program with the sudoku as highlighted in the make_script.bat use
+./make_script.bat run
+
+This version is the less efficient multithreaded version. For the more efficient version, see the main branch.
