@@ -47,8 +47,7 @@ pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
 
 int main(int argc, char **argv)
 {
-    if(argc>2){throw runtime_error("Too many arguments.");}
-    else if(argc==1){throw runtime_error("No path to sudoku given.");}
+    if(argc==1){throw runtime_error("No path to sudoku given.");}
     
     string path = argv[1];
 
