@@ -169,9 +169,9 @@ class Sudoku{
             return os;
         }    
 
-        void Sudoku::InsertGuesslist( GuessList& g){
+        void InsertGuesslist( GuessList& g){
             for(GuessList::Triple& t:g.guesses){
-                Sudoku::ChangeElement(t.firstX,t.firstY,t.second);
+                ChangeElement(t.firstX,t.firstY,t.second);
             }
         }
 
