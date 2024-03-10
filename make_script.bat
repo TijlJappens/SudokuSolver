@@ -1,5 +1,6 @@
 @echo off
-SET sudoku=./Sudokus/empty_sudoku.txt
+REM Some examples of sudokus include: master_difficulty.txt ; solved_sudoku.txt ; starter_sudoku.txt
+SET sudoku=./Sudokus/starter_sudoku.txt
 if %1==build (
     REM clang ./src/main.cpp --output="./build/main.exe"
     g++ ./src/main.cpp -o ./build/main.exe -O3

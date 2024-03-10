@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <string>
+#include <windows.h>
 
 using namespace std;
 
@@ -83,14 +84,23 @@ int main(int argc, char **argv)
     std::cout << "Fully solved: " << s.CheckFullySolved() << endl;
     std::cout << "Possible: " << s.CheckPossible() << endl;
 
-    auto start = chrono::system_clock::now();
+    //chrono::time_point<std::chrono::high_resolution_clock> start = chrono::high_resolution_clock::now();
+    LARGE_INTEGER start, end, frequency;
+    QueryPerformanceFrequency(&frequency);
+    QueryPerformanceCounter(&start);
+    
+    
     s.UpdatePossibilies();
     GuessList l = GuessList(s);
     pair<GuessList,Sudoku> p = ItterativeSolver(s,l);
+    
+    
 
-    auto end = chrono::system_clock::now();
-    auto elapsed = end - start;
-    std::cout << "It took " << elapsed.count() << " micro seconds." << endl;
+    //std::cout << "It took " << chrono::duration <double>(chrono::high_resolution_clock::now() - start).count() << " nano seconds." << endl;
+    QueryPerformanceCounter(&end);
+    double duration = static_cast<double>(end.QuadPart - start.QuadPart) / frequency.QuadPart;
+    std::cout << "It took " << duration * 1e3 << " miliseconds" << std::endl;
+    //std::cout << "It took " << chrono::duration <double>(chrono::high_resolution_clock::now() - start).count() << " nano seconds." << endl;
     std::cout << "It took " << moves << " guesses." << endl;
 
     std::cout << p.first << endl;
