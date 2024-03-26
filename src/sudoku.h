@@ -7,13 +7,12 @@
 
 class Sudoku{
     private:
-        array<short int,9*9> table;
+        array<uint8_t,9*9> table;
         array<BoolArray,9*9> possibilities;
         
 
     public:
-        Sudoku(array<short int,9*9> t){
-            table=t;
+        Sudoku(array<uint8_t,9*9> t) : table(t){
             for(int i=0;i<9;i++){
                 for(int j=0;j<9;j++){
                     if(table[i+9*j]!=0){
@@ -28,11 +27,11 @@ class Sudoku{
         }
 
 
-        array<short int,9*9> GetTable(){return table;}
+        array<uint8_t,9*9> GetTable(){return table;}
 
         // The first element is called column, the second one the row and the third one is the variable by which to change it.
-        void ChangeElement(const int& i,const int& j,const short int& k){table[i+9*j]=k;}
-        short int GetElement(const int& i,const int& j) const {return table[i+9*j];}
+        void ChangeElement(const int& i,const int& j,const u_int8_t& k){table[i+9*j]=k;}
+        uint8_t GetElement(const int& i,const int& j) const {return table[i+9*j];}
         BoolArray GetPossibilities(const int& i,const int& j) const {return possibilities[i+9*j];}
 
         //Checks if the table is consistent.
@@ -40,7 +39,7 @@ class Sudoku{
             //For all columns, rows and squares, for all numbers,
             // check if a number isn't included twice
             for(int i=0;i<9;i++){
-                for(short int n=1;n<10;n++){
+                for(uint8_t n=1;n<10;n++){
                     int n_count_row = 0;
                     int n_count_col = 0;
                     int n_count_square = 0;
@@ -60,7 +59,7 @@ class Sudoku{
 
         //Checks if inserting a (single) new element doesn't create additional inconsistencies.
         bool CheckConsistentSinglePosition(int x,int y){
-            int n = GetElement(x,y);
+            uint8_t n = GetElement(x,y);
             int n_count_row = 0;
             int n_count_col = 0;
             int n_count_square = 0;
@@ -85,7 +84,7 @@ class Sudoku{
             if(GetElement(i,j)!=0){
                 possibilities[i+9*j].SetAllFalse();
             }else{
-                for(short int n=1;n<=9;n++){
+                for(uint8_t n=1;n<=9;n++){
                     if(possibilities[i+9*j].GetBool(n)==true){
                         ChangeElement(i,j,n);
                         if(!CheckConsistentSinglePosition(i,j)){possibilities[i+9*j].SetFalse(n);}
@@ -160,7 +159,7 @@ class Sudoku{
                 }
                 for(int j=0;j<9;j++){
                     if(j%3==0){os << "| ";}
-                    os << table[9*i+j] << " ";
+                    os << unsigned(table[9*i+j]) << " ";
                 }
                 os << "|" << endl;
             }
@@ -185,8 +184,8 @@ ostream& operator<<(ostream& os, const Sudoku& sud) {
 
 
 GuessList::GuessList(const Sudoku& s){
-    for(short int i=0;i<9;i++){
-        for(short int j=0;j<9;j++){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
             if(s.GetElement(i,j)==0){
                 BoolArray a = s.GetPossibilities(i,j);
                 Triple t=Triple(i,j,0,a);

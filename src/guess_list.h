@@ -21,7 +21,7 @@ class GuessList{
         }
         int firstX;
         int firstY;
-        short int second;
+        uint8_t second;
         BoolArray third;
     };
 
@@ -55,7 +55,7 @@ class GuessList{
         ostream& Print(ostream& os) const{
             os << "| ";
             for(Triple t:guesses){
-                os << t.second << " |";
+                os << unsigned(t.second) << " |";
             }
             return os;
         }

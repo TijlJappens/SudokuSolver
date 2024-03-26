@@ -1,15 +1,18 @@
+array<bool,9> allSameGenerator(bool b){
+    if(b){
+        return {true,true,true,true,true,true,true,true,true};
+    }else{
+        return {false,false,false,false,false,false,false,false,false};
+    }
+}
 
 class BoolArray{
     public:
     array<bool,9> bool_array;
     int amount_true;
-    BoolArray(){
-        bool_array.fill(false);amount_true=0;
-    }
-    BoolArray(bool b){
-        if(b==true){bool_array.fill(true);amount_true=9;}
-        else{bool_array.fill(false);amount_true=0;}
-    }
+    
+    BoolArray(bool b) : bool_array(allSameGenerator(b)), amount_true(b*9){}
+    BoolArray() : BoolArray(false){}
 
     int FirstTrue() const{
         for(int i=0;i<9;i++){

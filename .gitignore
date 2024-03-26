@@ -33,3 +33,5 @@
 
 # vs code specific
 settings.json
+
+build/*

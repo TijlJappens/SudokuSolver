@@ -44,14 +44,12 @@ pair<GuessList,Sudoku> ItterativeSolver(Sudoku&s ,GuessList& l){
     return p;
 }
 
-
-int main(int argc, char **argv)
-{
-    if(argc==1){throw runtime_error("No path to sudoku given.");}
+Sudoku sudoku_reader(int argc, char** argv){
+        if(argc==1){throw runtime_error("No path to sudoku given.");}
     
     string path = argv[1];
 
-    array<short int, 9*9> a;
+    array<uint8_t, 9*9> a;
     ifstream myfile;
     
     myfile.open(path);
@@ -68,7 +66,7 @@ int main(int argc, char **argv)
             mychar = myfile.get();
             if(isdigit(mychar)){
                 if(i>a.size()-1){throw runtime_error("Too many numbers in file.");}
-                a[i] = (short int) (mychar-'0');
+                a[i] = (int) (mychar-'0');
                 i++;
             }
         }
@@ -77,7 +75,12 @@ int main(int argc, char **argv)
     
     
     std::cout << "Before filling in single possibilities: " << endl;
-    Sudoku s = Sudoku(a);
+    return Sudoku(a);
+}
+
+int main(int argc, char **argv)
+{
+    Sudoku s = sudoku_reader(argc,argv);
     std::cout << s << endl;
     std::cout << "Consistent: " << s.CheckConsistent() << endl;
     std::cout << "Fully solved: " << s.CheckFullySolved() << endl;
